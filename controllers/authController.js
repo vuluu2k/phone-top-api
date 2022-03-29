@@ -10,10 +10,10 @@ class authController {
   async createAuth(req, res) {
     const { name, password, email, role, role_name } = req.body;
     console.log(req.body);
-    if (!name || !password) return res.status(400).json({ success: false, message: 'Bạn chưa nhập tài khoản/ mật khẩu' });
+    if (!name || !password) return res.json({ success: false, message: 'Bạn chưa nhập tài khoản/ mật khẩu' });
     try {
       const authName = await auth.findOne({ name });
-      if (authName) return res.status(400).json({ success: false, message: 'Tên người dùng đã tồn tại' });
+      if (authName) return res.json({ success: false, message: 'Tên người dùng đã tồn tại' });
 
       const hashedPassword = await argon2.hash(password);
 
@@ -36,17 +36,16 @@ class authController {
   async loginAuth(req, res) {
     const { name, password } = req.body;
 
-    console.log(name, password);
-
     if (!name || !password) return res.status(400).json({ success: false, message: 'Bạn chưa nhập tài khoản/ mật khẩu' });
+
     try {
       const authFind = await auth.findOne({ name });
-      if (!authFind) return res.status(400).json({ success: false, message: 'Tài khoản hoặc mật khẩu không chính xác' });
+      if (!authFind) return res.json({ success: false, message: 'Tài khoản hoặc mật khẩu không chính xác' });
 
       const passwordValid = await argon2.verify(authFind.password, password);
-      if (!passwordValid) return res.status(400).json({ success: false, message: 'Tài khoản hoặc mật khẩu không chính xác' });
+      if (!passwordValid) return res.json({ success: false, message: 'Tài khoản hoặc mật khẩu không chính xác' });
 
-      const accessToken = jwt.sign({ authId: auth._id }, process.env.ACCESS_TOKEN_SECRET);
+      const accessToken = jwt.sign({ authId: authFind._id }, process.env.ACCESS_TOKEN_SECRET);
       res.json({ success: true, message: 'Đăng nhập thành công', accessToken });
     } catch (e) {
       console.log(e);
@@ -57,8 +56,8 @@ class authController {
   async checkAuth(req, res) {
     try {
       const auth_check = await auth.findById(req.authId).select('-password');
-      if (!auth_check) return res.status(400).json({ success: false, message: 'Không tìm thấy tài khoản' });
-      res.json({ success: true, message: 'Tải tên người dùng thành công', auth_check });
+      if (!auth_check) return res.json({ success: false, message: 'Không tìm thấy tài khoản' });
+      res.json({ success: true, message: 'Tải tên người dùng thành công', user: auth_check });
     } catch (e) {
       console.log(e);
       res.status(500).json({ success: false, message: 'Lỗi máy chủ nội bộ' });
