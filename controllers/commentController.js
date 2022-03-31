@@ -1,19 +1,15 @@
 import product from '../models/product';
-import { cloudinaryV2 } from '../utils/cloudinary';
 
-class productController {
-  async createProduct(req, res) {
-    const { name, value, image, status, quantity, category, options } = req.body;
-
-    console.log(req.body);
-
-    if (!name || !value || !image || !status) {
-      return res.json({ success: false, message: 'Bạn bỏ quên một số trường nhập bắt buộc' });
+class commentController {
+  async createComment(req, res) {
+    const { name, value, image, status, quantity, category } = req.body;
+    if (!name || !value || !type || !author) {
+      return res.status(403).json({ success: false, message: 'Bạn bỏ quên một số trường nhập bắt buộc' });
     }
 
     try {
       const image_response = await cloudinaryV2.uploader.upload(image, {
-        upload_preset: 'PhoneTopProduct',
+        upload_preset: 'Book_Dev',
         eager: { width: 900, height: 500, crop: 'pad' },
       });
       const newProduct = new product({
@@ -24,7 +20,6 @@ class productController {
         category,
         image_id: image_response.public_id,
         image_link: image_response.eager[0].url,
-        options,
       });
 
       await newProduct.save();
@@ -36,11 +31,11 @@ class productController {
     }
   }
 
-  async getProduct(req, res) {
+  async getComment(req, res) {
     const { product_id, name, value, status, category, page_number = 1, page_size = 10 } = req.query;
 
     try {
-      const listProduct = await product
+      const listProduct = await book
         .find({
           $and: [
             (product_id && product_id !== String(null) && product_id !== String(undefined) && { _id: product_id }) || {},
@@ -59,7 +54,7 @@ class productController {
       const page_totals = productLength;
 
       if (!listProduct) {
-        return res.json({ success: false, message: 'Danh sách trống!' });
+        return res.status(403).json({ success: false, message: 'Danh sách trống!' });
       }
       return res.json({
         success: true,
@@ -76,58 +71,59 @@ class productController {
     }
   }
 
-  async editProduct(req, res) {
-    const { product_id, name, value, image, status, quantity, category, options } = req.body;
+  async editComment(req, res) {
+    const { book_id } = req.query;
+    const { name, value, type, author, quantity, producer, image } = req.body;
 
-    if (!product_id) {
-      return res.json({ success: false, message: 'Có lỗi về mặt dữ liệu khi bắn lên Server' });
+    if (!book_id) {
+      return res.status(403).json({ success: false, message: 'Sách không tồn tại' });
     }
 
     try {
-      const product_with_id = await product.findById({ _id: product_id });
+      const book_with_id = await book.findById({ _id: book_id });
       const image_response = await cloudinaryV2.uploader.upload(image, {
-        public_id: product_with_id.image_id,
+        public_id: book_with_id.image_id,
         overwrite: true,
         eager: { width: 900, height: 500, crop: 'pad' },
       });
 
-      let product_change = {
+      let book_change = {
         name,
         value,
-        status,
+        type_of_book: type,
+        author_of_book: author,
         quantity,
-        category,
+        producer,
         image_id: image_response.public_id,
         image_link: image_response.eager[0].url,
-        options,
       };
 
-      const editProduct = await product.findOneAndUpdate({ _id: product_id }, product_change, { new: true });
-      if (!editProduct) {
-        return res.json({ success: false, message: 'Sách không tồn tại' });
+      const editBook = await book.findOneAndUpdate({ _id: book_id }, book_change, { new: true });
+      if (!editBook) {
+        return res.status(401).json({ success: false, message: 'Sách không tồn tại' });
       }
-      res.json({ success: true, message: 'Cập nhật thành công', product: editProduct });
+      res.json({ success: true, message: 'Cập nhật thành công', book: editBook });
     } catch (error) {
       console.log(error);
       res.status(500).json({ success: false, message: 'Lỗi máy chủ nội bộ' });
     }
   }
 
-  async deleteProduct(req, res) {
-    const { product_id } = req.body;
-    if (!product_id) {
-      return res.json({ success: false, message: 'Sách không tồn tại' });
+  async deleteComment(req, res) {
+    const { book_id } = req.query;
+    if (!book_id) {
+      return res.status(403).json({ success: false, message: 'Sách không tồn tại' });
     }
 
     try {
-      const deleteProduct = await product.findOneAndDelete({ _id: product_id });
+      const deleteBook = await book.findOneAndDelete({ _id: book_id });
 
-      if (!deleteProduct) {
-        return res.json({ success: false, message: 'Sách không tồn tại' });
+      if (!deleteBook) {
+        return res.status(403).json({ success: false, message: 'Sách không tồn tại' });
       }
 
-      await cloudinaryV2.uploader.destroy(`${deleteProduct.image_id}`);
-      res.json({ success: true, message: 'Xóa thành công', product: deleteProduct });
+      await cloudinaryV2.uploader.destroy(`${deleteBook.image_id}`);
+      res.json({ success: true, message: 'Xóa thành công', book: deleteBook });
     } catch (error) {
       console.log(error);
       res.status(500).json({ success: false, message: 'Lỗi máy chủ nội bộ' });
@@ -135,4 +131,4 @@ class productController {
   }
 }
 
-export default new productController();
+export default new commentController();

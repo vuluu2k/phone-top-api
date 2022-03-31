@@ -8,13 +8,13 @@ const productSchema = new Schema(
     image_id: { type: String, required: true },
     image_link: { type: String, required: true },
     status: { type: String, required: true, default: 'new' },
-    quantity: { type: Number, required: true },
+    quantity: { type: Number, required: true, default: 1 },
     cout_buy: { type: Number, default: 0 },
-    category: { type: Schema.Types.ObjectId, ref: 'category' },
+    category: { type: Schema.Types.ObjectId, ref: 'category', default: 'other' },
     options: [
       {
-        name: String,
-        value: Number,
+        name_options: String,
+        value_options: Number,
         image_id: String,
         image_link: String,
       },
