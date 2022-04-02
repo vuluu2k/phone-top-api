@@ -114,13 +114,13 @@ class productController {
   }
 
   async deleteProduct(req, res) {
-    const { product_id } = req.body;
-    if (!product_id) {
+    const { id } = req.params;
+    if (!id) {
       return res.json({ success: false, message: 'Sách không tồn tại' });
     }
 
     try {
-      const deleteProduct = await product.findOneAndDelete({ _id: product_id });
+      const deleteProduct = await product.findOneAndDelete({ _id: id });
 
       if (!deleteProduct) {
         return res.json({ success: false, message: 'Sách không tồn tại' });

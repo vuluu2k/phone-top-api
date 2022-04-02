@@ -5,6 +5,6 @@ import productController from '../controllers/productController';
 router.get('/view', productController.getProduct);
 router.post('/create', productController.createProduct);
 router.patch('/edit', productController.editProduct);
-router.delete('/delete', productController.deleteProduct);
+router.delete('/delete/:id', productController.deleteProduct);
 
 export default router;

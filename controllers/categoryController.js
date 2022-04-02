@@ -15,15 +15,57 @@ class categoryControlller {
   }
 
   async createCategory(req, res) {
-    const { name } = req.body;
+    const { name, name_vi, sub_name, icon_name, icon_component } = req.body;
     if (!name) return res.status(403).json({ success: false, message: 'Tên danh mục chưa được nhập' });
 
     try {
       const newCategory = new category({
         name,
+        name_vi,
+        sub_name,
+        icon_name,
+        icon_component,
       });
       await newCategory.save();
       res.json({ success: true, message: 'Danh mục đã được tạo', category: newCategory });
+    } catch (error) {
+      console.log(e);
+      res.status(500).json({ success: false, message: 'Lỗi máy chủ nội bộ' });
+    }
+  }
+
+  async editCategory(req, res) {
+    const { name, name_vi, sub_name, icon_name, icon_component } = req.body;
+    try {
+      const categoryChange = await category.findOne({ name });
+      if (!categoryChange) return res.json({ success: false, message: 'Danh mục không tồn tại' });
+
+      let categoryChangeCondition = {
+        name,
+        name_vi,
+        sub_name,
+        icon_name,
+        icon_component,
+      };
+
+      const change = await category.findOneAndUpdate({ name }, categoryChangeCondition, { new: true });
+
+      if (!change) return res.json({ success: false, message: 'Thay đổi không thành công' });
+
+      res.json({ success: true, message: 'Thay đổi thành công', category: change });
+    } catch (error) {
+      console.log(e);
+      res.status(500).json({ success: false, message: 'Lỗi máy chủ nội bộ' });
+    }
+  }
+
+  async deleteCategory(req, res) {
+    const { id } = req.params;
+    console.log(id);
+    try {
+      const categoryDelete = await category.findOneAndDelete({ _id: id });
+      if (!categoryDelete) return res.json({ success: false, message: 'Danh mục không tồn tại' });
+      res.json({ success: true, message: 'Xóa thành công' });
     } catch (error) {
       console.log(e);
       res.status(500).json({ success: false, message: 'Lỗi máy chủ nội bộ' });
