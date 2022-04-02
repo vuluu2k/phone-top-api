@@ -61,7 +61,6 @@ class categoryControlller {
 
   async deleteCategory(req, res) {
     const { id } = req.params;
-    console.log(id);
     try {
       const categoryDelete = await category.findOneAndDelete({ _id: id });
       if (!categoryDelete) return res.json({ success: false, message: 'Danh mục không tồn tại' });
