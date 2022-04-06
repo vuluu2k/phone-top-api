@@ -35,9 +35,10 @@ class categoryControlller {
   }
 
   async editCategory(req, res) {
+    const { id } = req.params;
     const { name, name_vi, sub_name, icon_name, icon_component } = req.body;
     try {
-      const categoryChange = await category.findOne({ name });
+      const categoryChange = await category.findOne({ _id: id });
       if (!categoryChange) return res.json({ success: false, message: 'Danh mục không tồn tại' });
 
       let categoryChangeCondition = {
@@ -48,11 +49,11 @@ class categoryControlller {
         icon_component,
       };
 
-      const change = await category.findOneAndUpdate({ name }, categoryChangeCondition, { new: true });
+      const change = await category.findOneAndUpdate({ _id: id }, categoryChangeCondition, { new: true });
 
       if (!change) return res.json({ success: false, message: 'Thay đổi không thành công' });
 
-      res.json({ success: true, message: 'Thay đổi thành công', category: change });
+      res.json({ success: true, message: 'Thay đổi thành công', id, category: change });
     } catch (error) {
       console.log(e);
       res.status(500).json({ success: false, message: 'Lỗi máy chủ nội bộ' });
@@ -64,7 +65,7 @@ class categoryControlller {
     try {
       const categoryDelete = await category.findOneAndDelete({ _id: id });
       if (!categoryDelete) return res.json({ success: false, message: 'Danh mục không tồn tại' });
-      res.json({ success: true, message: 'Xóa thành công' });
+      res.json({ success: true, message: 'Xóa thành công', id, category: categoryDelete });
     } catch (error) {
       console.log(e);
       res.status(500).json({ success: false, message: 'Lỗi máy chủ nội bộ' });
