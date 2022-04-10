@@ -8,8 +8,7 @@ import auth from '../models/auth';
 
 class authController {
   async createAuth(req, res) {
-    const { name, password, email, role, role_name } = req.body;
-    console.log(req.body);
+    const { name, password, email, role, role_name, phone_number, full_name } = req.body;
     if (!name || !password) return res.json({ success: false, message: 'Bạn chưa nhập tài khoản/ mật khẩu' });
     try {
       const authName = await auth.findOne({ name });
@@ -23,6 +22,8 @@ class authController {
         email,
         role,
         role_name,
+        phone_number,
+        full_name,
       });
       await newUser.save();
       const accessToken = jwt.sign({ authId: newUser._id }, process.env.ACCESS_TOKEN_SECRET);
@@ -66,8 +67,6 @@ class authController {
 
   async getAuth(req, res) {
     const { name, email } = req.query;
-
-    console.log(name);
 
     try {
       const auths = await auth.find({ $and: [(name && { name: name }) || {}, email && { email: email }] });

@@ -5,8 +5,6 @@ class productController {
   async createProduct(req, res) {
     const { name, value, image, status, quantity, category, sub_category, options, profile } = req.body;
 
-    console.log(req.body);
-
     if (!name || !value || !image || !status) {
       return res.json({ success: false, message: 'Bạn bỏ quên một số trường nhập bắt buộc' });
     }
@@ -122,14 +120,14 @@ class productController {
   async deleteProduct(req, res) {
     const { id } = req.params;
     if (!id) {
-      return res.json({ success: false, message: 'Sách không tồn tại' });
+      return res.json({ success: false, message: 'Mã sản phẩm không tồn tại' });
     }
 
     try {
       const deleteProduct = await product.findOneAndDelete({ _id: id });
 
       if (!deleteProduct) {
-        return res.json({ success: false, message: 'Sách không tồn tại' });
+        return res.json({ success: false, message: 'Sản phẩm không tồn tại' });
       }
 
       await cloudinaryV2.uploader.destroy(`${deleteProduct.image_id}`);
