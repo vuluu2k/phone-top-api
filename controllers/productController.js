@@ -3,7 +3,7 @@ import { cloudinaryV2 } from '../utils/cloudinary';
 
 class productController {
   async createProduct(req, res) {
-    const { name, value, image, status, quantity, category, options } = req.body;
+    const { name, value, image, status, quantity, category, sub_category, options, profile } = req.body;
 
     console.log(req.body);
 
@@ -14,7 +14,7 @@ class productController {
     try {
       const image_response = await cloudinaryV2.uploader.upload(image, {
         upload_preset: 'PhoneTopProduct',
-        eager: { width: 900, height: 500, crop: 'pad' },
+        eager: { width: 160, height: 160, crop: 'pad' },
       });
       const newProduct = new product({
         name,
@@ -24,7 +24,9 @@ class productController {
         category,
         image_id: image_response.public_id,
         image_link: image_response.eager[0].url,
+        sub_category,
         options,
+        profile,
       });
 
       await newProduct.save();
@@ -37,7 +39,7 @@ class productController {
   }
 
   async getProduct(req, res) {
-    const { product_id, name, value, status, category, page_number = 1, page_size = 10 } = req.query;
+    const { product_id, name, value, status, category, sub_category, page_number = 1, page_size = 10 } = req.query;
 
     try {
       const listProduct = await product
@@ -48,10 +50,12 @@ class productController {
             (value && value !== String(undefined) && { value }) || {},
             (status && status !== String(undefined) && { status }) || {},
             (category && category !== String(undefined) && { category }) || {},
+            (sub_category && sub_category !== String(undefined) && { sub_category }) || {},
           ],
         })
         .limit(page_size * 1)
-        .skip((page_number - 1) * page_size);
+        .skip((page_number - 1) * page_size)
+        .sort({ updatedAt: 'desc' });
 
       const productLength = await (await product.find({})).length;
 
@@ -77,7 +81,7 @@ class productController {
   }
 
   async editProduct(req, res) {
-    const { product_id, name, value, image, status, quantity, category, options } = req.body;
+    const { product_id, name, value, image, status, quantity, category, sub_category, options, profile } = req.body;
 
     if (!product_id) {
       return res.json({ success: false, message: 'Có lỗi về mặt dữ liệu khi bắn lên Server' });
@@ -88,7 +92,7 @@ class productController {
       const image_response = await cloudinaryV2.uploader.upload(image, {
         public_id: product_with_id.image_id,
         overwrite: true,
-        eager: { width: 900, height: 500, crop: 'pad' },
+        eager: { width: 160, height: 160, crop: 'pad' },
       });
 
       let product_change = {
@@ -99,7 +103,9 @@ class productController {
         category,
         image_id: image_response.public_id,
         image_link: image_response.eager[0].url,
+        sub_category,
         options,
+        profile,
       };
 
       const editProduct = await product.findOneAndUpdate({ _id: product_id }, product_change, { new: true });

@@ -11,6 +11,7 @@ const productSchema = new Schema(
     quantity: { type: Number, required: true, default: 1 },
     cout_buy: { type: Number, default: 0 },
     category: { type: Schema.Types.ObjectId, ref: 'category', default: 'other' },
+    sub_category: String,
     options: [
       {
         name_options: String,
@@ -19,6 +20,22 @@ const productSchema = new Schema(
         image_link: String,
       },
     ],
+    profile: {
+      screen_size: String,
+      screen_technology: String,
+      camera_font: String,
+      camera_back: String,
+      chipset: String,
+      ram_capacity: Number,
+      rom_capacity: Number,
+      baterry: Number,
+      sim_card: String,
+      os: String,
+      screen_pixel: String,
+      weight: Number,
+      bluetooth: String,
+      scan_frequency: String,
+    },
   },
   { timestamps: true }
 );
