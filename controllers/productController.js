@@ -12,7 +12,7 @@ class productController {
     try {
       const image_response = await cloudinaryV2.uploader.upload(image, {
         upload_preset: 'PhoneTopProduct',
-        eager: { width: 160, height: 160, crop: 'pad' },
+        eager: { width: 640, height: 640, crop: 'pad' },
       });
       const newProduct = new product({
         name,
@@ -78,6 +78,22 @@ class productController {
     }
   }
 
+  async getProductInHome(req, res) {
+    try {
+      const productHot = await product.find({}).sort({ cout_buy: 'desc' }).limit(18);
+      const mobile = await product.find({ category: '62481fd87f2cdc3cbcdf401b' }).sort({ updatedAt: 'desc' }).limit(12);
+      const laptop = await product.find({ category: '624820047f2cdc3cbcdf401f' }).sort({ updatedAt: 'desc' }).limit(12);
+      const watch = await product.find({ category: '62543745c9f08c0a89802fff' }).sort({ updatedAt: 'desc' }).limit(6);
+      const tablet = await product.find({ category: '624820167f2cdc3cbcdf4021' }).sort({ updatedAt: 'desc' }).limit(6);
+      const accessory = await product.find({ category: '625437f6c9f08c0a89803001' }).sort({ updatedAt: 'desc' }).limit(18);
+
+      res.json({ success: true, message: 'Tải Home thành công', hot: productHot, mobile, laptop, watch, tablet, accessory });
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ success: false, message: 'Lỗi máy chủ nội bộ' });
+    }
+  }
+
   async editProduct(req, res) {
     const { product_id, name, value, image, status, quantity, category, sub_category, options, profile } = req.body;
 
@@ -90,7 +106,7 @@ class productController {
       const image_response = await cloudinaryV2.uploader.upload(image, {
         public_id: product_with_id.image_id,
         overwrite: true,
-        eager: { width: 160, height: 160, crop: 'pad' },
+        eager: { width: 640, height: 640, crop: 'pad' },
       });
 
       let product_change = {
