@@ -7,6 +7,7 @@ const productSchema = new Schema(
     value: { type: Number, required: true },
     image_id: { type: String, required: true },
     image_link: { type: String, required: true },
+    description: { type: String },
     status: { type: String, required: true, default: 'Mới' },
     quantity: { type: Number, required: true, default: 1 },
     cout_buy: { type: Number, default: 0 },

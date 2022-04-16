@@ -3,7 +3,7 @@ import { cloudinaryV2 } from '../utils/cloudinary';
 
 class productController {
   async createProduct(req, res) {
-    const { name, value, image, status, quantity, category, sub_category, options, profile } = req.body;
+    const { name, value, image, status, quantity, category, sub_category, options, profile, description } = req.body;
 
     if (!name || !value || !image || !status) {
       return res.json({ success: false, message: 'Bạn bỏ quên một số trường nhập bắt buộc' });
@@ -25,6 +25,7 @@ class productController {
         sub_category,
         options,
         profile,
+        description,
       });
 
       await newProduct.save();
@@ -95,7 +96,7 @@ class productController {
   }
 
   async editProduct(req, res) {
-    const { product_id, name, value, image, status, quantity, category, sub_category, options, profile } = req.body;
+    const { product_id, name, value, image, status, quantity, category, sub_category, options, profile, description } = req.body;
 
     if (!product_id) {
       return res.json({ success: false, message: 'Có lỗi về mặt dữ liệu khi bắn lên Server' });
@@ -120,6 +121,7 @@ class productController {
         sub_category,
         options,
         profile,
+        description,
       };
 
       const editProduct = await product.findOneAndUpdate({ _id: product_id }, product_change, { new: true });
