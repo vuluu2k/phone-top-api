@@ -38,7 +38,6 @@ class cartController {
 
   async changeCart(req, res) {
     const { products, user_id } = req.body;
-    console.log(req.body);
     if (!user_id) return res.json({ success: false, message: 'Bạn chưa đăng nhập' });
     try {
       const cart_add = {
