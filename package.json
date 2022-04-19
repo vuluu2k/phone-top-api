@@ -8,7 +8,8 @@
   "license": "MIT",
   "scripts": {
     "start": "node --experimental-modules --es-module-specifier-resolution=node index.js",
-    "dev": "nodemon --experimental-modules --es-module-specifier-resolution=node --inspect index.js"
+    "dev": "nodemon --experimental-modules --es-module-specifier-resolution=node --inspect index.js",
+    "deloy":"git push heroku master"
   },
   "dependencies": {
     "argon2": "^0.28.5",
