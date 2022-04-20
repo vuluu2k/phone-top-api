@@ -19,6 +19,7 @@ const packageSchema = new Schema(
         note: String,
         status_vi: { type: String, default: 'Đơn mới' },
         status_en: { type: String, default: 'new' },
+        createdAt: { type: Date, default: new Date() },
       },
     ],
   },
