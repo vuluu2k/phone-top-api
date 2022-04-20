@@ -9,7 +9,7 @@ class categoryControlller {
       }
       res.json({ success: true, message: 'Tải dữ liệu danh mục thành công', categorys });
     } catch (error) {
-      console.log(e);
+      console.log(error);
       res.status(500).json({ success: false, message: 'Lỗi máy chủ nội bộ' });
     }
   }
@@ -29,7 +29,7 @@ class categoryControlller {
       await newCategory.save();
       res.json({ success: true, message: 'Danh mục đã được tạo', category: newCategory });
     } catch (error) {
-      console.log(e);
+      console.log(error);
       res.status(500).json({ success: false, message: 'Lỗi máy chủ nội bộ' });
     }
   }
@@ -55,7 +55,7 @@ class categoryControlller {
 
       res.json({ success: true, message: 'Thay đổi thành công', id, category: change });
     } catch (error) {
-      console.log(e);
+      console.log(error);
       res.status(500).json({ success: false, message: 'Lỗi máy chủ nội bộ' });
     }
   }
@@ -67,7 +67,7 @@ class categoryControlller {
       if (!categoryDelete) return res.json({ success: false, message: 'Danh mục không tồn tại' });
       res.json({ success: true, message: 'Xóa thành công', id, category: categoryDelete });
     } catch (error) {
-      console.log(e);
+      console.log(error);
       res.status(500).json({ success: false, message: 'Lỗi máy chủ nội bộ' });
     }
   }
