@@ -126,7 +126,7 @@ class productController {
 
       const editProduct = await product.findOneAndUpdate({ _id: product_id }, product_change, { new: true });
       if (!editProduct) {
-        return res.json({ success: false, message: 'Sách không tồn tại' });
+        return res.json({ success: false, message: 'Cập nhật thất bại' });
       }
       res.json({ success: true, message: 'Cập nhật thành công', product: editProduct });
     } catch (error) {
