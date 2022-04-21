@@ -14,7 +14,7 @@ class blogController {
         upload_preset: 'PhoneTopBlog',
         eager: { width: 2134, height: 1200, crop: 'pad' },
       });
-      const newBlog = new product({
+      const newBlog = new blog({
         title,
         type,
         image_id: image_response.public_id,
@@ -32,16 +32,12 @@ class blogController {
   }
 
   async getBlog(req, res) {
-    const { title, type, description, page_number = 1, page_size = 20 } = req.query;
+    const { title, type, page_number = 1, page_size = 20 } = req.query;
 
     try {
       const listBlog = await blog
         .find({
-          $and: [
-            (title && title !== String(undefined) && { title }) || {},
-            (type && type !== String(undefined) && { type }) || {},
-            (description && description !== String(undefined) && { description }) || {},
-          ],
+          $and: [(title && title !== String(undefined) && { title }) || {}, (type && type !== String(undefined) && { type }) || {}],
         })
         .limit(page_size * 1)
         .skip((page_number - 1) * page_size)
@@ -52,7 +48,7 @@ class blogController {
       const page_entries = blogLength / page_size;
       const page_totals = blogLength;
 
-      if (!listProduct) {
+      if (!listBlog) {
         return res.json({ success: false, message: 'Danh sách trống!' });
       }
       return res.json({
