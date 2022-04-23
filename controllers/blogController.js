@@ -69,6 +69,8 @@ class blogController {
   async editBlog(req, res) {
     const { blog_id, title, image, type, description } = req.body;
 
+    console.log(blog_id);
+
     if (!blog_id) {
       return res.json({ success: false, message: 'Có lỗi về mặt dữ liệu khi bắn lên Server' });
     }
@@ -89,7 +91,7 @@ class blogController {
         description,
       };
 
-      const editBlog = await product.findOneAndUpdate({ _id: product_id }, blog_change, { new: true });
+      const editBlog = await blog.findOneAndUpdate({ _id: blog_id }, blog_change, { new: true });
       if (!editBlog) {
         return res.json({ success: false, message: 'Cập nhật thất bại' });
       }
@@ -107,14 +109,14 @@ class blogController {
     }
 
     try {
-      const deleteBlog = await product.findOneAndDelete({ _id: id });
+      const deleteBlog = await blog.findOneAndDelete({ _id: id });
 
       if (!deleteBlog) {
         return res.json({ success: false, message: 'Sản phẩm không tồn tại' });
       }
 
       await cloudinaryV2.uploader.destroy(`${deleteBlog.image_id}`);
-      res.json({ success: true, message: 'Xóa thành công', product: deleteBlog });
+      res.json({ success: true, message: 'Xóa thành công', blog: deleteBlog });
     } catch (error) {
       console.log(error);
       res.status(500).json({ success: false, message: 'Lỗi máy chủ nội bộ' });

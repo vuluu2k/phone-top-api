@@ -39,13 +39,14 @@ class productController {
 
   async getProduct(req, res) {
     const { product_id, name, value, status, category, sub_category, page_number = 1, page_size = 10 } = req.query;
+    console.log(req.query);
 
     try {
       const listProduct = await product
         .find({
           $and: [
             (product_id && product_id !== String(null) && product_id !== String(undefined) && { _id: product_id }) || {},
-            (name && name !== String(undefined) && { name }) || {},
+            (name && name !== String(undefined) && { name: { $regex: name, $options: 'i' } }) || {},
             (value && value !== String(undefined) && { value }) || {},
             (status && status !== String(undefined) && { status }) || {},
             (category && category !== String(undefined) && { category }) || {},
@@ -72,6 +73,18 @@ class productController {
         page_number,
         page_entries,
         page_totals,
+        dataSearch: {
+          page_size,
+          page_number,
+          page_entries,
+          page_totals,
+          product_id,
+          name,
+          value,
+          status,
+          category,
+          sub_category,
+        },
       });
     } catch (error) {
       console.log(error);
