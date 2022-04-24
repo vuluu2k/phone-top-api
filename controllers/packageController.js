@@ -125,7 +125,7 @@ class packageControlller {
   async deletePackage(req, res) {
     const { id } = req.params;
     try {
-      const packageDelete = await category.findOneAndDelete({ _id: id });
+      const packageDelete = await packages.findOneAndDelete({ _id: id });
       if (!packageDelete) return res.json({ success: false, message: 'Đơn hàng không tồn tại' });
       res.json({ success: true, message: 'Xóa thành công', id, package_delete: packageDelete });
     } catch (error) {
@@ -149,8 +149,54 @@ class packageControlller {
         .sort({ updatedAt: 'desc' })
         .select('value updatedAt');
 
+      const productCount = await product.count({
+        updatedAt: {
+          $gte: dayjs(startDate).format('YYYY-MM-DDTHH:mm:ss.004[Z]') || Date.now(),
+          $lte: dayjs(endDate).format('YYYY-MM-DDTHH:mm:ss.004[Z]') || Date.now(),
+        },
+      });
+
+      const productCountOld = await product.count({
+        updatedAt: {
+          $lte: dayjs().subtract(1, 'year').format('YYYY-MM-DDTHH:mm:ss.004[Z]') || Date.now(),
+        },
+      });
+
+      const packageAcceptCount = await packages.count({
+        isAccess: true,
+        updatedAt: {
+          $gte: dayjs(startDate).format('YYYY-MM-DDTHH:mm:ss.004[Z]') || Date.now(),
+          $lte: dayjs(endDate).format('YYYY-MM-DDTHH:mm:ss.004[Z]') || Date.now(),
+        },
+      });
+
+      const packageNotAcceptCount = await packages.count({
+        isAccess: false,
+        updatedAt: {
+          $gte: dayjs(startDate).format('YYYY-MM-DDTHH:mm:ss.004[Z]') || Date.now(),
+          $lte: dayjs(endDate).format('YYYY-MM-DDTHH:mm:ss.004[Z]') || Date.now(),
+        },
+      });
+
+      const userCount = await auth.count({
+        role: 0,
+        updatedAt: {
+          $gte: dayjs(startDate).format('YYYY-MM-DDTHH:mm:ss.004[Z]') || Date.now(),
+          $lte: dayjs(endDate).format('YYYY-MM-DDTHH:mm:ss.004[Z]') || Date.now(),
+        },
+      });
+
       if (!packageSuccess) res.json('Không có bất kì một đơn hàng nào được thanh toán thành công');
-      res.json({ success: true, message: 'Danh sách thanh toán thành công', packages: packageSuccess });
+      res.json({
+        success: true,
+        message: 'Danh sách thanh toán thành công',
+        packages: packageSuccess,
+        productCount,
+        productCountOld,
+        packageAcceptCount,
+        packageNotAcceptCount,
+        userCount,
+      });
     } catch (error) {
       console.log(error);
       res.status(500).json({ success: false, message: 'Lỗi máy chủ nội bộ' });
