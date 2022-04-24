@@ -69,8 +69,6 @@ class blogController {
   async editBlog(req, res) {
     const { blog_id, title, image, type, description } = req.body;
 
-    console.log(blog_id);
-
     if (!blog_id) {
       return res.json({ success: false, message: 'Có lỗi về mặt dữ liệu khi bắn lên Server' });
     }

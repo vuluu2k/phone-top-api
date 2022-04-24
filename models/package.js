@@ -11,7 +11,7 @@ const packageSchema = new Schema(
     current_status_vi: { type: String, default: 'Đơn mới' },
     current_status_en: { type: String, default: 'new' },
     note: String,
-    value: String,
+    value: Number,
     is_pay: String,
     isAccess: { type: Boolean, default: false },
     historys: [

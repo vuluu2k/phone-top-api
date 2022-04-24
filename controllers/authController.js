@@ -58,7 +58,7 @@ class authController {
     try {
       const auth_check = await auth.findById(req.authId).select('-password');
       if (!auth_check) return res.json({ success: false, message: 'Không tìm thấy tài khoản' });
-      res.json({ success: true, message: 'Tải tên người dùng thành công', user: auth_check });
+      res.json({ success: true, message: 'Thông tin được tải lên thành công', user: auth_check });
     } catch (e) {
       console.log(e);
       res.status(500).json({ success: false, message: 'Lỗi máy chủ nội bộ' });
@@ -66,13 +66,62 @@ class authController {
   }
 
   async getAuth(req, res) {
-    const { name, email } = req.query;
+    const { name } = req.query;
 
     try {
-      const auths = await auth.find({ $and: [(name && { name: name }) || {}, email && { email: email }] });
+      const auths = await auth.find((name && name !== String(undefined) && { name: { $regex: name, $options: 'i' } }) || {});
       res.json({ success: true, message: 'Tải danh sách thành công', auths: auths });
     } catch (e) {
       console.log(e);
+      res.status(500).json({ success: false, message: 'Lỗi máy chủ nội bộ' });
+    }
+  }
+
+  async editAuth(req, res) {
+    const { user_id, email, phone_number, full_name, password, change_password, new_password } = req.body;
+
+    if (!user_id) return res.json({ success: false, message: 'Chưa đăng nhập' });
+    try {
+      const userFind = await auth.findOne({ _id: user_id });
+      if (!userFind) return res.json({ success: false, message: 'Tài khoản này không tồn tại' });
+
+      if (change_password) {
+        const passwordValid = await argon2.verify(userFind.password, password);
+        if (!passwordValid) return res.json({ success: false, message: 'Mật khẩu cũ không chính xác' });
+      }
+
+      let editUser = {
+        password: (new_password && (await argon2.hash(new_password))) || userFind.password,
+        email,
+        phone_number,
+        full_name,
+      };
+
+      const userChange = await auth.findOneAndUpdate({ _id: user_id }, editUser, { new: true });
+
+      if (!userChange) return res.json({ success: false, message: 'Thay đổi thất bại' });
+      res.json({ success: true, message: 'Thay đổi thành công', user: userChange });
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ success: false, message: 'Lỗi máy chủ nội bộ' });
+    }
+  }
+
+  async deleteUser(req, res) {
+    const { id } = req.params;
+    if (!id) {
+      return res.json({ success: false, message: 'Không có nickname trong cửa hàng của bạn' });
+    }
+
+    try {
+      const deleteUser = await auth.findOneAndDelete({ _id: id });
+      if (!deleteUser) {
+        return res.json({ success: false, message: 'Tên tài khoản không tồn tại' });
+      }
+
+      res.json({ success: true, message: 'Xóa thành công', user: deleteUser });
+    } catch (error) {
+      console.log(error);
       res.status(500).json({ success: false, message: 'Lỗi máy chủ nội bộ' });
     }
   }
