@@ -1,5 +1,7 @@
 import packages from '../models/package';
 import product from '../models/product';
+import auth from '../models/auth';
+import dayjs from 'dayjs';
 
 class packageControlller {
   async getPackage(req, res) {
@@ -22,7 +24,7 @@ class packageControlller {
     const { code_package, phone_number } = req.query;
 
     try {
-      const check_package = await packages.findOne({ _id: code_package, phone_number: phone_number });
+      const check_package = await packages.findOne({ _id: code_package, phone_number: phone_number }).sort({ updatedAt: 'desc' });
       if (!check_package) {
         return res.json({ success: false, message: 'Thông tin không chính xác', check_package });
       }
@@ -120,38 +122,35 @@ class packageControlller {
     }
   }
 
-  // async editCategory(req, res) {
-  //   const { id } = req.params;
-  //   const { name, name_vi, sub_name, icon_name, icon_component } = req.body;
-  //   try {
-  //     const categoryChange = await category.findOne({ _id: id });
-  //     if (!categoryChange) return res.json({ success: false, message: 'Danh mục không tồn tại' });
-
-  //     let categoryChangeCondition = {
-  //       name,
-  //       name_vi,
-  //       sub_name,
-  //       icon_name,
-  //       icon_component,
-  //     };
-
-  //     const change = await category.findOneAndUpdate({ _id: id }, categoryChangeCondition, { new: true });
-
-  //     if (!change) return res.json({ success: false, message: 'Thay đổi không thành công' });
-
-  //     res.json({ success: true, message: 'Thay đổi thành công', id, category: change });
-  //   } catch (error) {
-  //     console.log(e);
-  //     res.status(500).json({ success: false, message: 'Lỗi máy chủ nội bộ' });
-  //   }
-  // }
-
   async deletePackage(req, res) {
     const { id } = req.params;
     try {
       const packageDelete = await category.findOneAndDelete({ _id: id });
       if (!packageDelete) return res.json({ success: false, message: 'Đơn hàng không tồn tại' });
       res.json({ success: true, message: 'Xóa thành công', id, package_delete: packageDelete });
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ success: false, message: 'Lỗi máy chủ nội bộ' });
+    }
+  }
+
+  async getTurnover(req, res) {
+    const { startDate, endDate } = req.query;
+    try {
+      const packageSuccess = await packages
+        .find({
+          isAccess: true,
+          current_status_en: 'success',
+          updatedAt: {
+            $gte: dayjs(startDate).format('YYYY-MM-DDTHH:mm:ss.004[Z]') || Date.now(),
+            $lte: dayjs(endDate).format('YYYY-MM-DDTHH:mm:ss.004[Z]') || Date.now(),
+          },
+        })
+        .sort({ updatedAt: 'desc' })
+        .select('value updatedAt');
+
+      if (!packageSuccess) res.json('Không có bất kì một đơn hàng nào được thanh toán thành công');
+      res.json({ success: true, message: 'Danh sách thanh toán thành công', packages: packageSuccess });
     } catch (error) {
       console.log(error);
       res.status(500).json({ success: false, message: 'Lỗi máy chủ nội bộ' });
