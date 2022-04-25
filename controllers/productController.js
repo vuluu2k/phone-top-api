@@ -39,7 +39,6 @@ class productController {
 
   async getProduct(req, res) {
     const { product_id, name, value, status, category, sub_category, page_number = 1, page_size = 10 } = req.query;
-    console.log(req.query);
 
     try {
       const listProduct = await product
