@@ -1,4 +1,5 @@
 import product from '../models/product';
+import category from '../models/category';
 import { cloudinaryV2 } from '../utils/cloudinary';
 
 class productController {
@@ -93,14 +94,29 @@ class productController {
 
   async getProductInHome(req, res) {
     try {
+      const categorys = await category.find({}).sort({ createdAt: 'asc' });
       const productHot = await product.find({}).sort({ cout_buy: 'desc' }).limit(18);
-      const mobile = await product.find({ category: '62481fd87f2cdc3cbcdf401b' }).sort({ updatedAt: 'desc' }).limit(12);
-      const laptop = await product.find({ category: '624820047f2cdc3cbcdf401f' }).sort({ updatedAt: 'desc' }).limit(12);
-      const watch = await product.find({ category: '62543745c9f08c0a89802fff' }).sort({ updatedAt: 'desc' }).limit(6);
-      const tablet = await product.find({ category: '624820167f2cdc3cbcdf4021' }).sort({ updatedAt: 'desc' }).limit(6);
-      const accessory = await product.find({ category: '625437f6c9f08c0a89803001' }).sort({ updatedAt: 'desc' }).limit(18);
 
-      res.json({ success: true, message: 'Tải Home thành công', hot: productHot, mobile, laptop, watch, tablet, accessory });
+      let arrayProduct = [];
+
+      categorys.map(async (item, idx) => {
+        try {
+          const productItem = await product.find({ category: item._id }).sort({ updatedAt: 'desc' }).limit(12);
+          arrayProduct.push({ products: productItem, category: item.name_vi });
+        } catch (error) {
+          console.log(error);
+          res.status(500).json({ success: false, message: 'Lỗi máy chủ nội bộ' });
+        }
+      });
+
+      const mobile = await product.find({ category: '62481fd87f2cdc3cbcdf401b' }).sort({ updatedAt: 'desc' }).limit(20);
+
+      res.json({
+        success: true,
+        message: 'Tải Home thành công',
+        hot: productHot,
+        productOther: arrayProduct,
+      });
     } catch (error) {
       console.log(error);
       res.status(500).json({ success: false, message: 'Lỗi máy chủ nội bộ' });
