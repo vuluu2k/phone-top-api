@@ -5,6 +5,7 @@ import commentRouter from './comment';
 import cartRouter from './cart';
 import packageRouter from './package';
 import blogRouter from './blog';
+import layoutRouter from './layout';
 
 function route(app) {
   app.use('/api/auth', authRouter);
@@ -14,6 +15,7 @@ function route(app) {
   app.use('/api/cart', cartRouter);
   app.use('/api/package', packageRouter);
   app.use('/api/blog', blogRouter);
+  app.use('/api/layout', layoutRouter);
 }
 
 export default route;
