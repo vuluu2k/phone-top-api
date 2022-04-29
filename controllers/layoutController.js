@@ -22,7 +22,7 @@ class layoutControlller {
     try {
       const image_response = await cloudinaryV2.uploader.upload(image, {
         upload_preset: 'phone_top_layout',
-        eager: { width: 1380, height: 600, crop: 'pad' },
+        eager: { width: 1380, height: 600, crop: 'fill', fetch_format: 'auto' },
       });
       const newImage = new layout({
         position,
@@ -46,7 +46,7 @@ class layoutControlller {
       const image_response = await cloudinaryV2.uploader.upload(image, {
         public_id: layout_with_id.image_id,
         overwrite: true,
-        eager: { width: 1380, height: 600, crop: 'pad' },
+        eager: { width: 1380, height: 600, crop: 'fill', fetch_format: 'auto' },
       });
       const editImage = new {
         position,
