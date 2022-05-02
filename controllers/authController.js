@@ -8,7 +8,11 @@ import auth from '../models/auth';
 
 class authController {
   async createAuth(req, res) {
-    const { name, password, email, role, role_name, phone_number, full_name } = req.body;
+    const { name, password, email, role, phone_number, full_name } = req.body;
+    let role_name = 'customer';
+    if (role === 1) role_name = 'manager';
+    if (role === 2) role_name = 'employee';
+
     if (!name || !password) return res.json({ success: false, message: 'Bạn chưa nhập tài khoản/ mật khẩu' });
     try {
       const authName = await auth.findOne({ name });
@@ -66,11 +70,25 @@ class authController {
   }
 
   async getAuth(req, res) {
-    const { name } = req.query;
+    const { name, role } = req.query;
 
     try {
-      const auths = await auth.find((name && name !== String(undefined) && { name: { $regex: name, $options: 'i' } }) || {});
-      res.json({ success: true, message: 'Tải danh sách thành công', auths: auths });
+      const auths = await auth.find({
+        $and: [
+          (name && name !== String(undefined) && { name: { $regex: name, $options: 'i' } }) || {},
+          (role && role !== String(undefined) && { role }) || {},
+        ],
+      });
+
+      res.json({
+        success: true,
+        message: 'Tải danh sách thành công',
+        auths: auths,
+        dataSearch: {
+          name,
+          role,
+        },
+      });
     } catch (e) {
       console.log(e);
       res.status(500).json({ success: false, message: 'Lỗi máy chủ nội bộ' });
@@ -78,7 +96,10 @@ class authController {
   }
 
   async editAuth(req, res) {
-    const { user_id, email, phone_number, full_name, password, change_password, new_password } = req.body;
+    const { user_id, email, phone_number, full_name, password, change_password, new_password, role } = req.body;
+    let role_name = 'customer';
+    if (role === 1) role_name = 'manager';
+    if (role === 2) role_name = 'employee';
 
     if (!user_id) return res.json({ success: false, message: 'Chưa đăng nhập' });
     try {
@@ -95,6 +116,8 @@ class authController {
         email,
         phone_number,
         full_name,
+        role,
+        role_name,
       };
 
       const userChange = await auth.findOneAndUpdate({ _id: user_id }, editUser, { new: true });
