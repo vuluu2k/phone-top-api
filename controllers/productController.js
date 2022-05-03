@@ -97,6 +97,7 @@ class productController {
   async getProductInHome(req, res) {
     try {
       const categorys = await category.find({}).sort({ createdAt: 'asc' });
+      const productHot = await product.find({}).sort({ cout_buy: 'desc' }).limit(18);
 
       let arrayProduct = [];
 
@@ -110,14 +111,16 @@ class productController {
         }
       });
 
-      const productHot = await product.find({}).sort({ cout_buy: 'desc' }).limit(18);
-
-      res.json({
-        success: true,
-        message: 'Tải Home thành công',
-        hot: productHot,
-        productOther: orderBy(arrayProduct, ['index'], ['asc']),
-      });
+      setTimeout(
+        async () =>
+          await res.json({
+            success: true,
+            message: 'Tải Home thành công',
+            hot: productHot,
+            productOther: orderBy(arrayProduct, ['index'], ['asc']),
+          }),
+        1000
+      );
     } catch (error) {
       console.log(error);
       res.status(500).json({ success: false, message: 'Lỗi máy chủ nội bộ' });
