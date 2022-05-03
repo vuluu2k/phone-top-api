@@ -1,6 +1,8 @@
 import product from '../models/product';
 import category from '../models/category';
 import { cloudinaryV2 } from '../utils/cloudinary';
+import lodash from 'lodash';
+const { orderBy } = lodash;
 
 class productController {
   async createProduct(req, res) {
@@ -95,27 +97,26 @@ class productController {
   async getProductInHome(req, res) {
     try {
       const categorys = await category.find({}).sort({ createdAt: 'asc' });
-      const productHot = await product.find({}).sort({ cout_buy: 'desc' }).limit(18);
 
       let arrayProduct = [];
 
       categorys.map(async (item, idx) => {
         try {
-          const productItem = await product.find({ category: item._id }).sort({ updatedAt: 'desc' }).limit(12);
-          arrayProduct.push({ products: productItem, category: item.name_vi });
+          const productItem = await product.find({ category: item._id }).sort({ cout_buy: 'desc' }).limit(12);
+          arrayProduct = arrayProduct.concat([{ products: productItem, category: item.name_vi, index: idx }]);
         } catch (error) {
           console.log(error);
           res.status(500).json({ success: false, message: 'Lỗi máy chủ nội bộ' });
         }
       });
 
-      const mobile = await product.find({ category: '62481fd87f2cdc3cbcdf401b' }).sort({ updatedAt: 'desc' }).limit(20);
+      const productHot = await product.find({}).sort({ cout_buy: 'desc' }).limit(18);
 
       res.json({
         success: true,
         message: 'Tải Home thành công',
         hot: productHot,
-        productOther: arrayProduct,
+        productOther: orderBy(arrayProduct, ['index'], ['asc']),
       });
     } catch (error) {
       console.log(error);
