@@ -15,8 +15,10 @@ class authController {
 
     if (!name || !password) return res.json({ success: false, message: 'Bạn chưa nhập tài khoản/ mật khẩu' });
     try {
-      const authName = await auth.findOne({ name });
-      if (authName) return res.json({ success: false, message: 'Tên người dùng đã tồn tại' });
+      const authName = await auth.findOne({ $or: [{ name }, { phone_number }, { email }] });
+      if (authName?.name === name) return res.json({ success: false, message: 'Tên người đã được sử dụng' });
+      if (authName?.phone_number === phone_number) return res.json({ success: false, message: 'Số điện thoại đã được sử dụng' });
+      if (authName?.email === email) return res.json({ success: false, message: 'Email đã được sử dụng' });
 
       const hashedPassword = await argon2.hash(password);
 
