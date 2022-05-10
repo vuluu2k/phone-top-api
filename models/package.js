@@ -10,6 +10,7 @@ const packageSchema = new Schema(
     products: Array,
     current_status_vi: { type: String, default: 'Đơn mới' },
     current_status_en: { type: String, default: 'new' },
+    isRequest: { note: String },
     note: String,
     value: Number,
     is_pay: String,

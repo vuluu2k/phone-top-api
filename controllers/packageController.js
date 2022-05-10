@@ -2,18 +2,33 @@ import packages from '../models/package';
 import product from '../models/product';
 import auth from '../models/auth';
 import dayjs from 'dayjs';
+import validator from 'validator';
 
 class packageControlller {
   async getPackage(req, res) {
-    const { isAccess } = req.query;
+    const { isAccess, phoneNumber, codePackage, userId } = req.query;
+
     try {
       const view_package = await packages
-        .find({ $and: [(isAccess && isAccess !== String(undefined) && { isAccess }) || {}] })
+        .find({
+          $and: [
+            (isAccess && { isAccess: isAccess }) || {},
+            (validator.isMongoId(codePackage) && { _id: codePackage }) || {},
+            (validator.isMobilePhone(phoneNumber) && { phone_number: phoneNumber }) || {},
+            (validator.isMongoId(userId) && { user_id: userId }) || {},
+          ],
+        })
+        .populate('user_id')
         .sort({ updatedAt: 'desc' });
       if (!view_package) {
         return res.json({ success: false, message: 'Không có dữ liệu đơn hàng', view_package });
       }
-      res.json({ success: true, message: 'Tải dữ liệu đơn hàng thành công', view_package });
+      res.json({
+        success: true,
+        message: 'Tải dữ liệu đơn hàng thành công',
+        view_package,
+        dataSearch: { isAccess, phoneNumber, codePackage, userId },
+      });
     } catch (error) {
       console.log(error);
       res.status(500).json({ success: false, message: 'Lỗi máy chủ nội bộ' });
@@ -28,7 +43,7 @@ class packageControlller {
       if (!check_package) {
         return res.json({ success: false, message: 'Thông tin không chính xác', check_package });
       }
-      res.json({ success: true, message: 'Tìm thấy đơn hàng của bạn', check_package });
+      res.json({ success: true, message: 'Tìm thấy đơn hàng của bạn', view_package: check_package });
     } catch (error) {
       console.log(error);
       res.status(500).json({ success: false, message: 'Lỗi máy chủ nội bộ' });

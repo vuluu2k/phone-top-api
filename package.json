@@ -22,7 +22,8 @@
     "loader": "^2.1.1",
     "lodash": "^4.17.21",
     "mongoose": "^6.2.6",
-    "mongoose-slug-generator": "^1.0.4"
+    "mongoose-slug-generator": "^1.0.4",
+    "validator": "^13.7.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.15"
