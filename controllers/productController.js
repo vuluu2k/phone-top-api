@@ -119,7 +119,7 @@ class productController {
             hot: productHot,
             productOther: orderBy(arrayProduct, ['index'], ['asc']),
           }),
-        100
+        1000
       );
     } catch (error) {
       console.log(error);
