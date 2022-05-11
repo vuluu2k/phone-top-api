@@ -142,7 +142,7 @@ class packageControlller {
     try {
       const packageDelete = await packages.findOneAndDelete({ _id: id });
       if (!packageDelete) return res.json({ success: false, message: 'Đơn hàng không tồn tại' });
-      res.json({ success: true, message: 'Xóa thành công', id, package_delete: packageDelete });
+      res.json({ success: true, message: `Hủy thành công đơn hàng ${id}`, id, package_delete: packageDelete });
     } catch (error) {
       console.log(error);
       res.status(500).json({ success: false, message: 'Lỗi máy chủ nội bộ' });
@@ -212,6 +212,21 @@ class packageControlller {
         packageNotAcceptCount,
         userCount,
       });
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ success: false, message: 'Lỗi máy chủ nội bộ' });
+    }
+  }
+
+  async sendRequest(req, res) {
+    const { codePackage, note } = req.body;
+    try {
+      const requestPackage = await packages.findOne({ _id: codePackage });
+      if (!requestPackage) res.json({ success: false, message: 'Đơn hàng không tồn tại' });
+
+      const request = await packages.findOneAndUpdate({ _id: codePackage }, { isRequest: { note, isTrash: false } }, { new: true });
+      if (!request) res.json({ success: false, message: 'Gửi yêu cầu thất bại' });
+      res.json({ success: true, message: 'Gửi yêu cầu thành công', request });
     } catch (error) {
       console.log(error);
       res.status(500).json({ success: false, message: 'Lỗi máy chủ nội bộ' });
