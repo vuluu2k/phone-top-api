@@ -219,12 +219,14 @@ class packageControlller {
   }
 
   async sendRequest(req, res) {
-    const { codePackage, note } = req.body;
+    const { codePackage, note, isTrash } = req.body;
+
+    if (!note) return res.json({ success: false, message: 'Bạn chưa nhập lí do' });
     try {
       const requestPackage = await packages.findOne({ _id: codePackage });
       if (!requestPackage) res.json({ success: false, message: 'Đơn hàng không tồn tại' });
 
-      const request = await packages.findOneAndUpdate({ _id: codePackage }, { isRequest: { note, isTrash: false } }, { new: true });
+      const request = await packages.findOneAndUpdate({ _id: codePackage }, { isRequest: { note, isTrash: isTrash || true } }, { new: true });
       if (!request) res.json({ success: false, message: 'Gửi yêu cầu thất bại' });
       res.json({ success: true, message: 'Gửi yêu cầu thành công', request });
     } catch (error) {
