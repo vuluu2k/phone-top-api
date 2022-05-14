@@ -14,6 +14,7 @@ const packageSchema = new Schema(
     note: String,
     value: Number,
     is_pay: String,
+    cod: Number,
     isAccess: { type: Boolean, default: false },
     historys: [
       {
