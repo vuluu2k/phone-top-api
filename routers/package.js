@@ -9,5 +9,6 @@ router.post('/accept_package', packageController.acceptPackage);
 router.delete('/delete_package/:id', packageController.deletePackage);
 router.get('/view_turnover', packageController.getTurnover);
 router.post('/request_cancel_package', packageController.sendRequest);
+router.post('/send_shipper', packageController.sendShipper);
 
 export default router;
