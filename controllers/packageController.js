@@ -127,10 +127,46 @@ class packageControlller {
           { new: true }
         );
 
-        if (!packageAccept) return res.json({ success: false, message: 'Cập nhật không thành công' });
+        if (!packageAccept) return res.json({ success: false, message: 'Cập nhật trạng thái không thành công' });
 
         return res.json({ success: true, message: 'cập nhật trạng thái thành công', package_accept: packageAccept });
       }
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ success: false, message: 'Lỗi máy chủ nội bộ' });
+    }
+  }
+
+  async sendShipper(req, res) {
+    const { package_id } = req.body;
+
+    try {
+      const packageSend = await packages.findOne({ _id: package_id });
+      if (!packageSend?.isAccess)
+        return res.json({ success: false, message: 'Đơn hàng chưa được xác nhận vui lòng xác nhận trước khi chuyển cho shipper' });
+      if (packageSend?.current_status_en === 'shipper_picked') return res.json({ success: false, message: 'Đơn hàng đã chuyển cho shipper' });
+      if (packageSend?.current_status_en !== 'waiting' || packageSend?.current_status_en === 'success')
+        return res.json({ success: false, message: 'Trạng thái đơn hàng không cho phép chuyển cho shipper' });
+
+      let dataSend = {
+        cod: 15000,
+        current_status_en: 'shipper_picked',
+        current_status_vi: 'Đã lấy hàng',
+        historys: packageSend.historys.concat([
+          {
+            status_vi: 'Đã lấy hàng',
+            status_en: 'shipper_picked',
+            note: `Shiper đang lấy hàng lúc ${dayjs(Date.now()).format('HH:mm DD/MM/YYYY')}`,
+            createdAt: Date.now(),
+          },
+        ]),
+      };
+
+      const packageChangeSend = await packages.findOneAndUpdate({ _id: package_id }, dataSend, { new: true });
+
+      if (!packageChangeSend) return res.json({ success: false, message: 'Cập nhật trạng thái không thành công' });
+
+      return res.json({ success: true, message: 'cập nhật trạng thái thành công', packageChangeSend });
     } catch (error) {
       console.log(error);
       res.status(500).json({ success: false, message: 'Lỗi máy chủ nội bộ' });
@@ -141,6 +177,16 @@ class packageControlller {
     const { id } = req.params;
     try {
       const packageDelete = await packages.findOneAndDelete({ _id: id });
+      if (packageDelete?.isAccess && packageDelete?.current_status_en !== 'success' && packageDelete?.current_status_en !== 'waiting') {
+        packageDelete.products.map(async item => {
+          const productItem = await product.findOne({ _id: item.product_id });
+          await product.findOneAndUpdate(
+            { _id: item.product_id },
+            { quantity: productItem.quantity + item.quantity, cout_buy: productItem.cout_buy - item.quantity },
+            { new: true }
+          );
+        });
+      }
       if (!packageDelete) return res.json({ success: false, message: 'Đơn hàng không tồn tại' });
       res.json({ success: true, message: `Hủy thành công đơn hàng ${id}`, id, package_delete: packageDelete });
     } catch (error) {
