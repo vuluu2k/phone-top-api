@@ -142,11 +142,22 @@ class packageControlller {
 
     try {
       const packageSend = await packages.findOne({ _id: package_id });
+
+      if (packageSend?.is_pay === 'Thanh toán tại cửa hàng') return res.json({ success: false, message: 'Đơn hàng được thanh toán tại cửa hàng' });
       if (!packageSend?.isAccess)
         return res.json({ success: false, message: 'Đơn hàng chưa được xác nhận vui lòng xác nhận trước khi chuyển cho shipper' });
       if (packageSend?.current_status_en === 'shipper_picked') return res.json({ success: false, message: 'Đơn hàng đã chuyển cho shipper' });
       if (packageSend?.current_status_en !== 'waiting' || packageSend?.current_status_en === 'success')
         return res.json({ success: false, message: 'Trạng thái đơn hàng không cho phép chuyển cho shipper' });
+
+      packageSend.products.map(async item => {
+        const productItem = await product.findOne({ _id: item.product_id });
+        await product.findOneAndUpdate(
+          { _id: item.product_id },
+          { quantity: productItem.quantity - item.quantity, cout_buy: productItem.cout_buy + item.quantity },
+          { new: true }
+        );
+      });
 
       let dataSend = {
         cod: 15000,
@@ -247,7 +258,20 @@ class packageControlller {
         },
       });
 
-      if (!packageSuccess) res.json('Không có bất kì một đơn hàng nào được thanh toán thành công');
+      const codShipper = await packages
+        .find({
+          isAccess: true,
+          cod: { $gte: 1000 },
+          updatedAt: {
+            $gte: dayjs(startDate).format('YYYY-MM-DDTHH:mm:ss.004[Z]') || Date.now(),
+            $lte: dayjs(endDate).format('YYYY-MM-DDTHH:mm:ss.004[Z]') || Date.now(),
+          },
+        })
+        .sort({ updatedAt: 'desc' })
+        .select('cod updatedAt');
+
+      if (!packageSuccess) res.json({ success: false, message: 'Thông kê đang xảy ra vấn đề không lấy được từ cơ sở dữ liệu' });
+
       res.json({
         success: true,
         message: 'Danh sách thanh toán thành công',
@@ -257,6 +281,7 @@ class packageControlller {
         packageAcceptCount,
         packageNotAcceptCount,
         userCount,
+        codShipper,
       });
     } catch (error) {
       console.log(error);
