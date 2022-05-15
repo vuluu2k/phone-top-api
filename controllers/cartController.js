@@ -47,8 +47,6 @@ class cartController {
 
       const find = await cart.findOne({ user_id: user_id });
 
-      console.log(find);
-
       const changeCart = await cart.findOneAndUpdate({ user_id: user_id }, cart_add, { new: true });
 
       if (!changeCart) return res.json({ success: false, message: 'Thay đổi giỏ hàng không thành công' });
