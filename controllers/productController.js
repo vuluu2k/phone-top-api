@@ -94,6 +94,19 @@ class productController {
     }
   }
 
+  async getProductItem(req, res) {
+    const { id } = req.params;
+    try {
+      const findProductItem = await product.findById({ _id: id });
+      if (!findProductItem) return res.json({ success: false, message: 'Sản phẩm không tồn tại' });
+
+      return res.json({ success: true, message: 'Tìm thấy sản phẩm của bạn', product: findProductItem });
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ success: false, message: 'Lỗi máy chủ nội bộ' });
+    }
+  }
+
   async getProductInHome(req, res) {
     try {
       const categorys = await category.find({}).sort({ createdAt: 'asc' });
