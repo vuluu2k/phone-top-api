@@ -114,7 +114,7 @@ class productController {
 
       let arrayProduct = [];
 
-      categorys.map(async (item, idx) => {
+      await categorys.map(async (item, idx) => {
         try {
           const productItem = await product.find({ category: item._id }).sort({ cout_buy: 'desc' }).limit(12);
           arrayProduct = arrayProduct.concat([{ products: productItem, category: item.name_vi, index: idx }]);
@@ -124,16 +124,12 @@ class productController {
         }
       });
 
-      setTimeout(
-        async () =>
-          await res.json({
-            success: true,
-            message: 'Tải Home thành công',
-            hot: productHot,
-            productOther: orderBy(arrayProduct, ['index'], ['asc']),
-          }),
-        1000
-      );
+      res.json({
+        success: true,
+        message: 'Tải Home thành công',
+        hot: productHot,
+        productOther: orderBy(arrayProduct, ['index'], ['asc']),
+      });
     } catch (error) {
       console.log(error);
       res.status(500).json({ success: false, message: 'Lỗi máy chủ nội bộ' });
