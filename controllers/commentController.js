@@ -9,7 +9,6 @@ class commentController {
 
     try {
       const image_response = await cloudinaryV2.uploader.upload(image, {
-        upload_preset: 'Book_Dev',
         eager: { width: 900, height: 500, crop: 'pad' },
       });
       const newProduct = new product({

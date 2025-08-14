@@ -14,7 +14,6 @@ class productController {
 
     try {
       const image_response = await cloudinaryV2.uploader.upload(image, {
-        upload_preset: 'PhoneTopProduct',
         eager: { width: 640, height: 640, crop: 'pad' },
       });
       const newProduct = new product({
