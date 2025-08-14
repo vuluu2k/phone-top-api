@@ -1,5 +1,5 @@
-import cart from '../models/cart';
-import product from '../models/product';
+const cart = require('../models/cart');
+const product = require('../models/product');
 
 class cartController {
   async initCart(req, res) {
@@ -59,4 +59,4 @@ class cartController {
   }
 }
 
-export default new cartController();
+module.exports = new cartController();

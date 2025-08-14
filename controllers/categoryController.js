@@ -1,4 +1,4 @@
-import category from '../models/category';
+const category = require('../models/category');
 
 class categoryControlller {
   async getCategory(req, res) {
@@ -73,4 +73,4 @@ class categoryControlller {
   }
 }
 
-export default new categoryControlller();
+module.exports = new categoryControlller();

@@ -1,11 +1,11 @@
-import express from 'express';
+const express = require('express');
 
 const router = express.Router();
-import layoutControlller from '../controllers/layoutController';
+const layoutControlller = require('../controllers/layoutController');
 
 router.get('/view_layout', layoutControlller.getLayout);
 router.post('/create_layout', layoutControlller.createLayout);
 router.delete('/delete_layout/:id', layoutControlller.deleteLayout);
 router.patch('/edit_layout', layoutControlller.editLayout);
 
-export default router;
+module.exports = router;

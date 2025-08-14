@@ -1,5 +1,5 @@
-import blog from '../models/blog';
-import { cloudinaryV2 } from '../utils/cloudinary';
+const blog = require('../models/blog');
+const { cloudinaryV2 } = require('../utils/cloudinary');
 
 class blogController {
   async createBlog(req, res) {
@@ -122,4 +122,4 @@ class blogController {
   }
 }
 
-export default new blogController();
+module.exports = new blogController();

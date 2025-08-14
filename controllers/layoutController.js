@@ -1,5 +1,5 @@
-import layout from '../models/layout';
-import { cloudinaryV2 } from '../utils/cloudinary';
+const layout = require('../models/layout');
+const { cloudinaryV2 } = require('../utils/cloudinary');
 
 class layoutControlller {
   async getLayout(req, res) {
@@ -77,4 +77,4 @@ class layoutControlller {
   }
 }
 
-export default new layoutControlller();
+module.exports = new layoutControlller();

@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const layoutSchema = new Schema(
@@ -10,4 +10,4 @@ const layoutSchema = new Schema(
   { timestamps: true }
 );
 
-export default mongoose.model('layout', layoutSchema);
+module.exports = mongoose.model('layout', layoutSchema);

@@ -1,4 +1,4 @@
-import jwt from 'jsonwebtoken';
+const jwt = require('jsonwebtoken');
 
 const verifyToken = (req, res, next) => {
   const authHeader = req.header('Authorization');
@@ -16,4 +16,4 @@ const verifyToken = (req, res, next) => {
     return res.status(403).json({ success: false, message: 'Sai accessToken' });
   }
 };
-export { verifyToken };
+module.exports = { verifyToken };

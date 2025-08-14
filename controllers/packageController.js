@@ -1,8 +1,8 @@
-import packages from '../models/package';
-import product from '../models/product';
-import auth from '../models/auth';
-import dayjs from 'dayjs';
-import validator from 'validator';
+const packages = require('../models/package');
+const product = require('../models/product');
+const auth = require('../models/auth');
+const dayjs = require('dayjs');
+const validator = require('validator');
 
 class packageControlller {
   async getPackage(req, res) {
@@ -307,4 +307,4 @@ class packageControlller {
   }
 }
 
-export default new packageControlller();
+module.exports = new packageControlller();

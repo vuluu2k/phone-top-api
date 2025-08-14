@@ -1,7 +1,7 @@
-import product from '../models/product';
-import category from '../models/category';
-import { cloudinaryV2 } from '../utils/cloudinary';
-import lodash from 'lodash';
+const product = require('../models/product');
+const category = require('../models/category');
+const { cloudinaryV2 } = require('../utils/cloudinary');
+const lodash = require('lodash');
 const { orderBy } = lodash;
 
 class productController {
@@ -198,4 +198,4 @@ class productController {
   }
 }
 
-export default new productController();
+module.exports = new productController();

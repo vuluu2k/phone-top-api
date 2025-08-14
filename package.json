@@ -1,14 +1,13 @@
 {
   "name": "PhoneTop",
   "version": "1.0.0",
-  "type": "module",
   "description": "Create Manage",
   "main": "index.js",
   "author": "vuluu <tieungpk1@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "start": "node --experimental-modules --es-module-specifier-resolution=node index.js",
-    "dev": "nodemon --experimental-modules --es-module-specifier-resolution=node --inspect index.js",
+    "start": "node index.js",
+    "dev": "nodemon --inspect index.js",
     "deloy": "git push heroku master"
   },
   "dependencies": {

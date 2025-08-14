@@ -1,8 +1,8 @@
-import express from 'express';
-import cors from 'cors';
+const express = require('express');
+const cors = require('cors');
 
-import route from './routers';
-import { connect } from './config/db';
+const route = require('./routers');
+const { connect } = require('./config/db');
 
 const app = express();
 const port = process.env.PORT || 5000;

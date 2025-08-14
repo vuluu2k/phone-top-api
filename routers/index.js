@@ -1,11 +1,11 @@
-import authRouter from './auth';
-import categoryRouter from './category';
-import productRouter from './product';
-import commentRouter from './comment';
-import cartRouter from './cart';
-import packageRouter from './package';
-import blogRouter from './blog';
-import layoutRouter from './layout';
+const authRouter = require('./auth');
+const categoryRouter = require('./category');
+const productRouter = require('./product');
+const commentRouter = require('./comment');
+const cartRouter = require('./cart');
+const packageRouter = require('./package');
+const blogRouter = require('./blog');
+const layoutRouter = require('./layout');
 
 function route(app) {
   app.use('/api/auth', authRouter);
@@ -18,4 +18,4 @@ function route(app) {
   app.use('/api/layout', layoutRouter);
 }
 
-export default route;
+module.exports = route;

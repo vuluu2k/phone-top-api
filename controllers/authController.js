@@ -1,10 +1,10 @@
 // auth Controllers
 
-import argon2 from 'argon2';
-import jwt from 'jsonwebtoken';
-import 'dotenv/config';
+const argon2 = require('argon2');
+const jwt = require('jsonwebtoken');
+require('dotenv/config');
 
-import auth from '../models/auth';
+const auth = require('../models/auth');
 
 class authController {
   async createAuth(req, res) {
@@ -152,4 +152,4 @@ class authController {
   }
 }
 
-export default new authController();
+module.exports = new authController();

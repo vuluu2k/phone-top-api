@@ -1,4 +1,4 @@
-import product from '../models/product';
+const product = require('../models/product');
 
 class commentController {
   async createComment(req, res) {
@@ -131,4 +131,4 @@ class commentController {
   }
 }
 
-export default new commentController();
+module.exports = new commentController();
