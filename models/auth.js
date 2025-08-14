@@ -24,6 +24,7 @@ const authSchema = new Schema(
     role: {
       type: Number,
       default: 0,
+      enum: [0, 1, 2],
     },
     role_name: {
       type: String,
