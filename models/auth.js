@@ -28,6 +28,7 @@ const authSchema = new Schema(
     role_name: {
       type: String,
       default: 'customer',
+      enum: ['customer', 'manager', 'employee'],
     },
   },
   {
