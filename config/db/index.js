@@ -4,7 +4,7 @@ import mongoose from 'mongoose';
 async function connect() {
   try {
     await mongoose.connect(
-      `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@cluster0.pay0f.mongodb.net/ShopTop?retryWrites=true&w=majority`,
+      process.env.MONGO_URI,
       {
         useNewUrlParser: true,
         useUnifiedTopology: true,
