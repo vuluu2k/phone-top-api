@@ -111,17 +111,15 @@ class productController {
       const categorys = await category.find({}).sort({ createdAt: 'asc' });
       const productHot = await product.find({}).sort({ cout_buy: 'desc' }).limit(18);
 
-      let arrayProduct = [];
-
-      await categorys.map(async (item, idx) => {
+      const arrayProduct = await Promise.all(categorys.map(async (item, idx) => {
         try {
           const productItem = await product.find({ category: item._id }).sort({ cout_buy: 'desc' }).limit(12);
-          arrayProduct = arrayProduct.concat([{ products: productItem, category: item.name_vi, index: idx }]);
+          return { products: productItem, category: item.name_vi, index: idx };
         } catch (error) {
           console.log(error);
           res.status(500).json({ success: false, message: 'Lỗi máy chủ nội bộ' });
         }
-      });
+      }));
 
       res.json({
         success: true,
