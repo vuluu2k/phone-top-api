@@ -195,6 +195,45 @@ class productController {
       res.status(500).json({ success: false, message: 'Lỗi máy chủ nội bộ' });
     }
   }
+
+  async duplicateProduct(req, res) {
+    const { id } = req.params;
+
+    try {
+      const sourceProduct = await product.findById(id);
+      
+      if (!sourceProduct) {
+        return res.status(404).json({ success: false, message: 'Không tìm thấy sản phẩm' });
+      }
+
+      // Upload the image again to get new image ID and URL
+      const image_response = await cloudinaryV2.uploader.upload(sourceProduct.image_link, {
+        eager: { width: 640, height: 640, crop: 'pad' },
+      });
+
+      // Create new product with source product's data
+      const newProduct = new product({
+        name: `${sourceProduct.name} (Copy)`,
+        value: sourceProduct.value,
+        status: sourceProduct.status,
+        quantity: sourceProduct.quantity,
+        category: sourceProduct.category,
+        image_id: image_response.public_id,
+        image_link: image_response.eager[0].url,
+        sub_category: sourceProduct.sub_category,
+        options: sourceProduct.options,
+        profile: sourceProduct.profile,
+        description: sourceProduct.description,
+      });
+
+      await newProduct.save();
+
+      res.json({ success: true, message: 'Nhân bản sản phẩm thành công!', product: newProduct });
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ success: false, message: 'Lỗi máy chủ nội bộ' });
+    }
+  }
 }
 
 module.exports = new productController();
