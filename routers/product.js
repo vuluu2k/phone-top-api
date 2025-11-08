@@ -7,6 +7,7 @@ router.post('/create', productController.createProduct);
 router.patch('/edit', productController.editProduct);
 router.delete('/delete/:id', productController.deleteProduct);
 router.get('/view_home', productController.getProductInHome);
+router.post('/duplicate/:id', productController.duplicateProduct);
 router.get('/:id', productController.getProductItem);
 
 module.exports = router;
