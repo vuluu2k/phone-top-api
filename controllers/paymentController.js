@@ -43,7 +43,7 @@ class PaymentController {
       const zaloPayOrder = await zalopay.createOrder(orderData);
       
       if (zaloPayOrder.return_code === 1) {
-        // Update package with ZaloPay transaction information
+        // Update package with ZaloPay transaction information 
         await packages.findOneAndUpdate(
           { _id: package_id },
           { 
@@ -80,7 +80,13 @@ class PaymentController {
   }
 
   /**
-   * Handle ZaloPay callback
+   * Handle ZaloPay callback - Chỉ cần khi bạn muốn xử lý callback từ ZaloPay
+   * 
+   * Lưu ý: Để sử dụng hàm này, bạn cần:
+   * 1. Có một URL callback có thể truy cập được từ internet (có thể dùng ngrok khi phát triển local)
+   * 2. Cấu hình URL callback trong ZaloPay Developer Portal
+   * 3. Có key2 để xác thực callback
+   * 
    * @param {Object} req - Request object
    * @param {Object} res - Response object
    */
@@ -151,7 +157,12 @@ class PaymentController {
   }
 
   /**
-   * Query ZaloPay order status
+   * Query ZaloPay order status - Dùng để kiểm tra trạng thái đơn hàng
+   * 
+   * Hàm này hữu ích khi:
+   * 1. Bạn muốn kiểm tra trạng thái thanh toán của đơn hàng
+   * 2. Người dùng quay lại từ ZaloPay và bạn muốn xác nhận trạng thái thanh toán
+   * 
    * @param {Object} req - Request object
    * @param {Object} res - Response object
    */

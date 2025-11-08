@@ -7,8 +7,10 @@ require('dotenv').config();
 const config = {
   app_id: process.env.ZALOPAY_APP_ID,
   key1: process.env.ZALOPAY_KEY1,
+  // key2 chỉ cần khi xử lý callback từ ZaloPay
   key2: process.env.ZALOPAY_KEY2,
   endpoint: process.env.ZALOPAY_ENDPOINT || 'https://sb-openapi.zalopay.vn/v2',
+  // callback_url chỉ cần khi muốn ZaloPay gọi lại hệ thống của bạn
   callback_url: process.env.ZALOPAY_CALLBACK_URL || 'https://your-domain.com/api/payment/zalopay-callback',
   redirect_url: process.env.ZALOPAY_REDIRECT_URL || 'https://your-domain.com/checkout/success',
 };
@@ -43,6 +45,8 @@ const createOrder = async (orderData) => {
       bank_code: 'zalopayapp',
       item: JSON.stringify([]),
       embed_data: JSON.stringify(embedData),
+      // callback_url chỉ cần khi muốn ZaloPay gọi lại hệ thống của bạn sau khi thanh toán
+      // Bạn có thể bỏ trường này nếu chưa cần xử lý callback
       callback_url: config.callback_url,
     };
 
@@ -62,7 +66,13 @@ const createOrder = async (orderData) => {
 };
 
 /**
- * Verify ZaloPay callback
+ * Verify ZaloPay callback - Hàm này chỉ cần khi bạn muốn xử lý callback từ ZaloPay
+ * 
+ * Lưu ý: Để sử dụng hàm này, bạn cần:
+ * 1. Có một URL callback có thể truy cập được từ internet (có thể dùng ngrok khi phát triển local)
+ * 2. Cấu hình URL callback trong ZaloPay Developer Portal
+ * 3. Có key2 để xác thực callback
+ * 
  * @param {Object} data - Callback data from ZaloPay
  * @returns {boolean} - Is valid callback
  */
@@ -70,7 +80,7 @@ const verifyCallback = (data) => {
   try {
     const { app_id, app_trans_id, amount, embed_data, mac } = data;
     
-    // Verify MAC
+    // Verify MAC sử dụng key2
     const dataStr = app_id + "|" + app_trans_id + "|" + amount + "|" + embed_data;
     const calculatedMac = crypto.createHmac('sha256', config.key2).update(dataStr).digest('hex');
     
