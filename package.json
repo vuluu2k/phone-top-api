@@ -1,5 +1,5 @@
 {
-  "name": "PhoneTop",
+  "name": "phone-top",
   "version": "1.0.0",
   "description": "Create Manage",
   "main": "index.js",
@@ -12,8 +12,10 @@
   },
   "dependencies": {
     "argon2": "^0.28.5",
+    "axios": "^1.6.2",
     "cloudinary": "^1.28.1",
     "cors": "^2.8.5",
+    "crypto": "^1.0.1",
     "dayjs": "^1.11.1",
     "dotenv": "^16.0.0",
     "express": "^4.17.3",

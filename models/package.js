@@ -16,6 +16,14 @@ const packageSchema = new Schema(
     is_pay: String,
     cod: Number,
     isAccess: { type: Boolean, default: false },
+    zalopay_transaction: {
+      app_trans_id: String,
+      zp_trans_id: String,
+      amount: Number,
+      status: { type: String, enum: ['pending', 'completed', 'failed'], default: 'pending' },
+      created_at: { type: Date },
+      completed_at: { type: Date },
+    },
     historys: [
       {
         note: String,

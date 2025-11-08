@@ -71,6 +71,18 @@ class packageControlller {
         historys: [{ status_vi: 'Đơn mới', status_en: 'new', note: 'Bạn có một đơn mới', createdAt: Date.now() }],
       });
       await newPackage.save();
+      
+      // If payment method is ZaloPay, return package ID for payment processing
+      if (is_pay === 'ZaloPay') {
+        return res.json({ 
+          success: true, 
+          message: 'Đơn hàng đã được tạo, vui lòng tiếp tục thanh toán qua ZaloPay', 
+          package_new: newPackage,
+          payment_required: true,
+          payment_method: 'ZaloPay'
+        });
+      }
+      
       res.json({ success: true, message: 'Bạn có một đơn hàng mới', package_new: newPackage });
     } catch (error) {
       console.log(error);
